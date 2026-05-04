@@ -1,0 +1,13 @@
+{
+  "MQTT_HOST": "hostname_or_ipaddress",
+  "MQTT_USER": "mq_user",
+  "MQTT_PASSWORD": "mq_password",
+  "MQTT_PORT": "mq_port",
+  "ENVOY_HOST": "envoy_ip_address",
+  "ENVOY_USER": "your_enphase_username",
+  "ENVOY_PASSWORD": "your_enphase_password",
+  "ENVOY_USE_HTTPS": true,
+  "MQTT_TOPIC": "envoy/json",
+  "BATTERY_INSTALLED": true,
+  "FREQUENCY": 60
+  }

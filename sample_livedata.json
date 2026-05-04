@@ -1,0 +1,121 @@
+{
+    "connection": {
+        "mqtt_state": "connected",
+        "prov_state": "configured",
+        "auth_state": "ok",
+        "sc_stream": "enabled",
+        "sc_debug": "disabled"
+    },
+    "meters": {
+        "last_update": 1777848492,
+        "soc": 17,
+        "main_relay_state": 1,
+        "gen_relay_state": 5,
+        "backup_bat_mode": 1,
+        "backup_soc": 0,
+        "is_split_phase": 0,
+        "phase_count": 1,
+        "enc_agg_soc": 17,
+        "enc_agg_energy": 850,
+        "acb_agg_soc": 0,
+        "acb_agg_energy": 0,
+        "pv": {
+            "agg_p_mw": 0,
+            "agg_s_mva": 155300,
+            "agg_p_ph_a_mw": 0,
+            "agg_p_ph_b_mw": 0,
+            "agg_p_ph_c_mw": 0,
+            "agg_s_ph_a_mva": 155300,
+            "agg_s_ph_b_mva": 0,
+            "agg_s_ph_c_mva": 0
+        },
+        "storage": {
+            "agg_p_mw": 781000,
+            "agg_s_mva": 639963,
+            "agg_p_ph_a_mw": 781000,
+            "agg_p_ph_b_mw": 0,
+            "agg_p_ph_c_mw": 0,
+            "agg_s_ph_a_mva": 639963,
+            "agg_s_ph_b_mva": 0,
+            "agg_s_ph_c_mva": 0
+        },
+        "grid": {
+            "agg_p_mw": 27694,
+            "agg_s_mva": 315715,
+            "agg_p_ph_a_mw": 27694,
+            "agg_p_ph_b_mw": 0,
+            "agg_p_ph_c_mw": 0,
+            "agg_s_ph_a_mva": 315715,
+            "agg_s_ph_b_mva": 0,
+            "agg_s_ph_c_mva": 0
+        },
+        "load": {
+            "agg_p_mw": 808694,
+            "agg_s_mva": 1110978,
+            "agg_p_ph_a_mw": 808694,
+            "agg_p_ph_b_mw": 0,
+            "agg_p_ph_c_mw": 0,
+            "agg_s_ph_a_mva": 1110978,
+            "agg_s_ph_b_mva": 0,
+            "agg_s_ph_c_mva": 0
+        },
+        "generator": {
+            "agg_p_mw": 0,
+            "agg_s_mva": 0,
+            "agg_p_ph_a_mw": 0,
+            "agg_p_ph_b_mw": 0,
+            "agg_p_ph_c_mw": 0,
+            "agg_s_ph_a_mva": 0,
+            "agg_s_ph_b_mva": 0,
+            "agg_s_ph_c_mva": 0
+        }
+    },
+    "tasks": {
+        "task_id": 102785987,
+        "timestamp": 1777836574
+    },
+    "counters": {
+        "main_CfgLoad": 2,
+        "main_CfgChanged": 1,
+        "main_taskUpdate": 334,
+        "MqttClient_publish": 44155,
+        "MqttClient_respond": 937,
+        "MqttClient_msgarrvd": 544,
+        "MqttClient_reconnect": 1,
+        "MqttClient_create": 17,
+        "MqttClient_setCallbacks": 17,
+        "MqttClient_connect": 17,
+        "MqttClient_connect_err": 4,
+        "MqttClient_connect_Err": 4,
+        "MqttClient_subscribe": 13,
+        "SSL_Keys_Create": 17,
+        "sc_SendStreamCtrl": 107,
+        "rest_Status": 126173
+    },
+    "dry_contacts": {
+        "h\u000B": {
+            "dry_contact_id": "h\u000B",
+            "dry_contact_type": "h\u000B",
+            "dry_contact_load_name": "\u0006",
+            "dry_contact_status": 0
+        },
+        "": {
+            "dry_contact_id": "",
+            "dry_contact_type": "",
+            "dry_contact_load_name": "",
+            "dry_contact_status": 0
+        },
+        "": {
+            "dry_contact_id": "",
+            "dry_contact_type": "",
+            "dry_contact_load_name": "",
+            "dry_contact_status": 0
+        },
+        "": {
+            "dry_contact_id": "",
+            "dry_contact_type": "",
+            "dry_contact_load_name": "",
+            "dry_contact_status": 0
+        }
+    }
+}
