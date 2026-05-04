@@ -130,9 +130,9 @@ if __name__ == '__main__':
         grid_watts = float(meters['grid']['agg_p_mw'])/1000
         load_watts = float(meters['load']['agg_p_mw'])/1000
 
-        msgs.append(('envoy/pv_watts', pv_watts, 1))
-        msgs.append(('envoy/storage_watts', storage_watts, 1))
-        msgs.append(('envoy/grid_watts', grid_watts, 1))
-        msgs.append(('envoy/load_watts', load_watts, 1))
-        msgs.append(('envoy/lastupdate', meas_time.isoformat()))
+        msgs.append((f'{cfg["MQTT_TOPIC"]}/pv_watts', pv_watts, 1))
+        msgs.append((f'{cfg["MQTT_TOPIC"]}/storage_watts', storage_watts, 1))
+        msgs.append((f'{cfg["MQTT_TOPIC"]}/grid_watts', grid_watts, 1))
+        msgs.append((f'{cfg["MQTT_TOPIC"]}/load_watts', load_watts, 1))
+        msgs.append((f'{cfg["MQTT_TOPIC"]}/lastupdate', meas_time.isoformat()))
         multiple(msgs=msgs, hostname=cfg['MQTT_HOST'], port=int(cfg['MQTT_PORT']), client_id=clientid, keepalive=60, auth=auth, tls=tls)

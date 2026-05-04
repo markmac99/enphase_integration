@@ -7,6 +7,6 @@
   "ENVOY_USER": "your_enphase_username",
   "ENVOY_PASSWORD": "your_enphase_password",
   "ENVOY_USE_HTTPS": true,
-  "MQTT_TOPIC": "envoy/json",
+  "MQTT_TOPIC": "envoy",
   "BATTERY_INSTALLED": true
   }
