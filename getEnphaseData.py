@@ -124,11 +124,11 @@ if __name__ == '__main__':
     msgs = []    
     if livedata:
         meters = livedata['meters']
-        meas_time = datetime.datetime.utcfromtimestamp(int(meters['last_update']))
         pv_watts = float(meters['pv']['agg_p_mw'])/1000
         storage_watts = float(meters['storage']['agg_p_mw'])/1000
         grid_watts = float(meters['grid']['agg_p_mw'])/1000
         load_watts = float(meters['load']['agg_p_mw'])/1000
+        meas_time = datetime.datetime.fromtimestamp(int(meters['last_update']), tz=datetime.timezone.utc)
 
         msgs.append((f'{cfg["MQTT_TOPIC"]}/pv_watts', pv_watts, 1))
         msgs.append((f'{cfg["MQTT_TOPIC"]}/storage_watts', storage_watts, 1))
