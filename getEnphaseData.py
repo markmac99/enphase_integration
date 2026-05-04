@@ -10,7 +10,6 @@ import requests
 from paho.mqtt.publish import multiple
 import xml.etree.ElementTree as ET
 import ssl
-from time import sleep
 import urllib3
 
 
