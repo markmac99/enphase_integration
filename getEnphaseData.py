@@ -11,6 +11,9 @@ from paho.mqtt.publish import multiple
 import xml.etree.ElementTree as ET
 import ssl
 import urllib3
+import logging
+
+log = logging.getLogger('enphase')
 
 
 def readConfig(cfgfile):
@@ -39,7 +42,7 @@ def getToken(cfg, renew=False):
     if os.path.isfile(cfg['TOKFILE']):
         token = open(cfg['TOKFILE'],'r').read()
     if token is None or token=='' or len(token) < 5 or renew is True:
-        print('getting token')
+        log.info('getting token')
         data = {'user[email]': cfg['ENVOY_USER'], 'user[password]': cfg['ENVOY_PASSWORD']}
         res = requests.post('https://enlighten.enphaseenergy.com/login/login.json?', data=data)
         if res.status_code == 200:
@@ -51,9 +54,9 @@ def getToken(cfg, renew=False):
                     f.write(res.text)
                 return res.text
             else:
-                print('unable to get token from entrez.enphaseenergy.com')
+                log.warning('unable to get token from entrez.enphaseenergy.com')
         else:
-            print('unable to login to enlighten.enphaseenergy.com')
+            log.warning('unable to login to enlighten.enphaseenergy.com')
         return None
     else:
         return token
@@ -74,38 +77,77 @@ def getLiveData(cfg):
 
     url = f'https://{cfg["ENVOY_HOST"]}/ivp/livedata/status'
     headers = {"Authorization": "Bearer " + token}
-    stream = requests.get(url, timeout=5, verify=False, headers=headers)
+    try:
+        stream = requests.get(url, timeout=5, verify=False, headers=headers)
+    except Exception as e:
+        log.warning('unable to connect to Envoy')
+        log.warning(e)
+        return None
     if stream.status_code == 401:
         token = getToken(cfg, True)
         headers = {"Authorization": "Bearer " + token}
-        stream = requests.get(url, timeout=5, verify=False, headers=headers)
+        try:
+            stream = requests.get(url, timeout=5, verify=False, headers=headers)
+        except Exception as e:
+            log.warning('unable to refresh token')
+            log.warning(e)
+            return None
     elif stream.status_code != 200:
-        print('Failed connect to Envoy got ', stream)
+        log.warning(f'Failed connect to Envoy got {stream}')
+        return None
     elif is_json_valid(stream.content):
         if stream.json()['connection']['sc_stream'] == 'disabled':
             url_activate=f'https://{cfg["ENVOY_HOST"]}/ivp/livedata/stream'
-            print('Stream is not active, trying to enable')
-            response_activate=requests.post(url_activate, verify=False, headers=headers, json={"enable": 1})
+            log.info('Stream is not active, trying to enable')
+            try:
+                response_activate=requests.post(url_activate, verify=False, headers=headers, json={"enable": 1})
+            except Exception as e:
+                log.warning('unable to connect to activate')
+                log.warning(e)
+                return None
             if is_json_valid(response_activate.content):
                 if response_activate.json()['sc_stream']=='enabled':
                     stream = requests.get(url, stream=True, timeout=5, verify=False, headers=headers)
-                    print('Success, stream is active now')
+                    log.info('Success, stream is active now')
                 else:
-                    print('Failed to activate stream ', response_activate.content)
+                    log.warning(f'Failed to activate stream with error {response_activate.content}')
+                    return None
             else:
-                print('Invalid Json Response:', response_activate.content)
+                log.warning(f'Invalid Json Response: {response_activate.content}')
+                return None
         else:
             return  stream.json()
         
     return None
 
 
+def initLogging(action):
+    logpath = os.path.expanduser('~/logs')
+    logname=os.path.join(logpath, f'{action}.log')
+    log.setLevel(logging.INFO)
+    fh = logging.FileHandler(logname, 'a+')
+    fh.setLevel(logging.DEBUG)
+    formatter = logging.Formatter(fmt='%(asctime)s-%(levelname)s-%(module)s-line:%(lineno)d - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+    fh.setFormatter(formatter)
+    log.addHandler(fh)
+
+    ch = logging.StreamHandler(sys.stdout)
+    ch.setLevel(logging.DEBUG)
+    ch.setFormatter(formatter)
+    log.addHandler(ch)
+    return 
+
+
 if __name__ == '__main__':
+
+    initLogging('enphase')
+    log.info('starting')
     cfgfile = 'config.json'
     stopfile = 'envoy.stop'
     cfg = readConfig(cfgfile)
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
+    log.info('connecting to MQ')
     auth = {'username':cfg['MQTT_USER'], 'password': cfg['MQTT_PASSWORD']}
     clientid = 'enphase'
     if int(cfg['MQTT_PORT']) == 8883:
@@ -118,11 +160,13 @@ if __name__ == '__main__':
     cfg['VERSION'] = vers
     cfg['TOKFILE'] = '.token'
 
+    log.info('getting token and data')
     token = getToken(cfg)
     livedata = getLiveData(cfg)
 
     msgs = []    
     if livedata:
+        log.info('posting data to mq')
         meters = livedata['meters']
         pv_watts = float(meters['pv']['agg_p_mw'])/1000
         storage_watts = float(meters['storage']['agg_p_mw'])/1000
@@ -135,4 +179,8 @@ if __name__ == '__main__':
         msgs.append((f'{cfg["MQTT_TOPIC"]}/grid_watts', grid_watts, 1))
         msgs.append((f'{cfg["MQTT_TOPIC"]}/load_watts', load_watts, 1))
         msgs.append((f'{cfg["MQTT_TOPIC"]}/lastupdate', meas_time.isoformat()))
+        log.info(msgs)
         multiple(msgs=msgs, hostname=cfg['MQTT_HOST'], port=int(cfg['MQTT_PORT']), client_id=clientid, keepalive=60, auth=auth, tls=tls)
+        log.info('posted to MQ')
+    log.info('finished')
+    log.info('========')
